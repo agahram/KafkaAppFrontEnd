@@ -15,7 +15,7 @@ interface Topic {
   topic_size?: number | null;
   views?: number | null;
   owner?: string | null;
-  labels?: string | null;
+  labels?: string[] | null;
   id: number;
 }
 
@@ -24,13 +24,15 @@ interface Props {
 }
 
 interface InterfaceTopic {
-  topic: Topic[] | undefined;
+  topic: Topic[];
   addNewTopic: (newTopic: Topic) => void;
+  topicDelete: (idArr: number[]) => void;
 }
 
 const InitialValue = {
-  topic: undefined,
+  topic: [],
   addNewTopic: () => null,
+  topicDelete: () => null,
 };
 
 const TopicContext = createContext<InterfaceTopic>(InitialValue);
@@ -48,14 +50,18 @@ const TopicProvider = ({ children }: Props) => {
         topic_size: 0,
         views: 0,
         owner: "",
-        labels: "",
+        labels: [],
         id: 0,
       },
     ]);
   };
 
+  const topicDelete = (idArr: number[]) => {
+    setTopic([...topic.filter((t) => !idArr.includes(t.id))]);
+  };
+
   return (
-    <TopicContext.Provider value={{ topic, addNewTopic }}>
+    <TopicContext.Provider value={{ topic, addNewTopic, topicDelete }}>
       {children}
     </TopicContext.Provider>
   );

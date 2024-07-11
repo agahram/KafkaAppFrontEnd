@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Stack } from "@mui/material";
 import SearchComponent from "./SearchComponent";
 import OwnerComponent from "./OwnerComponent";
@@ -7,9 +7,19 @@ import LabelsComponent from "./LabelsComponent";
 import AdditColumnsComponent from "./AdditColumnsComponent";
 import CreateTopicComponent from "./CreateTopicComponent";
 import { useTopic } from "../../context/TopicContext";
+import { useId } from "../../context/IdContext";
+import BottomButtonsComponent from "./BottomButtonsComponent";
 
 const columns: GridColDef[] = [
-  { field: "name", headerName: "Topic", width: 70 },
+  {
+    field: "name",
+    headerName: "Topic",
+    width: 70,
+    renderCell: ({ row }: any) => {
+      console.log(row);
+      return <a href="">{row.name}</a>;
+    },
+  },
   { field: "connection", headerName: "Connection", width: 130 },
   { field: "partition", headerName: "Partition", width: 130 },
   {
@@ -42,10 +52,16 @@ export const rows = [
     id: 1,
     name: "smth",
   },
+  {
+    id: 2,
+    name: "some",
+    labels: ["smth", "anything"],
+  },
 ];
 
 export default function DataTable() {
   const { topic } = useTopic();
+  const { idArr, setIdArr } = useId();
   return (
     <>
       <Stack spacing={2}>
@@ -68,8 +84,12 @@ export default function DataTable() {
           }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
+          onRowSelectionModelChange={(itm) => {
+            setIdArr(itm as number[]);
+          }}
         />
       </div>
+      {idArr?.length !== 0 ? <BottomButtonsComponent /> : <></>}
     </>
   );
 }
